@@ -1,0 +1,13 @@
+#### SERVICE DO MOMGO DB
+
+apiVersion: v1                                  # agrupamento de api do kubernets, recursos finalizados do kubernets  que pode ser usado
+kind: Service                                   # type, Service,
+metadata:
+  name: mongo-service                           # name of my service
+spec:                                           # specifies of object, pod, execute containers, than I specifie containers, Deplpyment execute
+  selector:
+      app: mongodb                              # match para o pod que tera o label de mongodb
+  ports:
+    - port: 27017                               # porta do servico
+      targetPort: 27017                         # Port do container para onde o servico vai apontar     
+  type: ClusterIP

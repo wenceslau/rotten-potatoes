@@ -1,0 +1,15 @@
+FROM python:3.8-slim-buster
+WORKDIR /app
+COPY requirements.txt /app
+RUN python -m pip install -r requirements.txt
+COPY . /app
+EXPOSE  5000
+CMD ["gunicorn", "--workers=3", "--bind", "0.0.0.0:5000", "app:app"]
+
+
+
+# docker build -t wenceslau/rotten-potatoes:v1 .  => cria a imgagem usando o docker file dentro do src
+# docker image ls  => lista as imgens
+# docker login => autentica
+# docker push wenceslau/rotten-potatoes:v1 => faz o push da imagem para o meu repositorio
+# docker tag wenceslau/rotten-potatoes:v1 wenceslau/rotten-potatoes:latest => cria a tag latest ou a versao latest

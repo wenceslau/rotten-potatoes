@@ -1,0 +1,26 @@
+#### DEPLOYMENO DO MOMGO DB
+
+apiVersion: apps/v1                             # agrupamento de api do kubernets, recursos finalizados do kubernets  que pode ser usado
+kind: Deployment                                # type, Deployment,
+metadata:
+  name: mongodb                                 # name of my Deployment
+spec:                                           # specifies of object, pod, execute containers, than I specifie containers, Deplpyment execute
+  selector:
+    matchLabels:
+      app: mongodb                              # match para o pod que tera o label de mongodb
+  template:                                     # template do POD para abrigar a container do mongodb
+    metadata:
+      labels:
+        app: mongodb
+    spec:
+      containers:
+        - name: mongodb
+          image: mongo:4.4.6                    # imagem a ser usada do mogo
+          ports:
+            - containerPort: 27017              # porta padrao do mongo
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              value: mongouser
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              value: mongopwd
+

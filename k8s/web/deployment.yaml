@@ -1,0 +1,48 @@
+#### DEPLOYMENO DA APP
+
+apiVersion: apps/v1                             # agrupamento de api do kubernets, recursos finalizados do kubernets  que pode ser usado
+kind: Deployment                                # type, Deployment,
+metadata:
+  name: movies                                  # name of my Deployment
+spec:                                           # specifies of object, pod, execute containers, than I specifie containers, Deplpyment execute
+  selector:
+    matchLabels:
+      app: movies                              # match para o pod que tera o label de mongodb
+  template:                                     # template do POD para abrigar a container do mongodb
+    metadata:
+      labels:
+        app: movies
+    spec:
+      containers:
+        - name: movies
+          image: wenceslau/rotten-potatoes:v1                   # imagem a ser usada
+          ports:
+            - containerPort: 5000                               # porta da app
+          env:
+            - name: MONGODB_DB
+              value: admin
+            - name: MONGODB_HOST
+              value: mongo-service
+            - name: MONGODB_PORT
+              value: "27017"
+            - name: MONGODB_USERNAME
+              value: mongouser
+            - name: MONGODB_PASSWORD
+              value: mongopwd                                        
+
+---
+
+#### SERVICE DA APP
+
+apiVersion: v1                                  # agrupamento de api do kubernets, recursos finalizados do kubernets  que pode ser usado
+kind: Service                                   # type, Service,
+metadata:
+  name: movies-service                           # name of my service
+spec:                                           # specifies of object, pod, execute containers, than I specifie containers, Deplpyment execute
+  selector:
+      app: movies                              # match para o pod que tera o label de mongodb
+  ports:
+    - port: 80                                  # porta do servico
+      targetPort: 5000                          # Port do container para onde o servico vai apontar  
+      nodePort: 30000                           # porta espcificada no cluster para o bind 
+  type: NodePort                                # ???

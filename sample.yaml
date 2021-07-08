@@ -1,0 +1,101 @@
+##### exemplo yaml para criar um POD
+
+# apiVersion: apps/v1                                                             # AGRUPAMENTO DE APIS DO KUBERNETS, RECURSOS FINALOZADOS QUE PODEM SER USADOS
+# kind: Pod                                                                       # TIPO, PODE SER  'Pod(menor objeto)', 'ReplicaSet(gerencia pods)' 'Deployment()',
+# metadata:
+#   name: meuPod                                                                  # NOME DO POD
+#   labels:
+#     app: nginx                                                                  # NOME OU ROTULO, USADO PARA FAZER SELECT NA LISTA DE OBJETOS
+# spec:                                                                           # ESPECIFICAÇOES DO OBJETO, QDO POD, ESPECIFICO CONTAINER
+#   containers:
+#     - name: site                                                                # NOME DO CONTAINER
+#       image: kubedevio/nginx-color:blue                                         # IMAGE PARA CRIAR O CONTAINER
+#       ports:
+#       - containerPort: 80                                                       # PORTA QUE O CONTANER EXPOE PARA ACESSAR O CONTEUDO
+
+##### commands#####
+# kubectl create -f .\file.yaml  =>  create the pod using the yaml file
+# kubectl get {all} {pods} {replicaset} {deployment}  #  => list of all pods, replicaset, deployment
+# kubectl describe pod namePod
+# kubectl port-forward pod/namePod 8080:80 =: bind of port to access pod
+# kubectl delete pod namePod
+# kubectl get pods -l app-nginx => list the pod using the label defined
+# kubectl apply -f .\file.yaml  =>  create ou updte the pod using the yaml file
+# kubectl scale {replicaset} or {deployment} {nome} --replicas 20 => aumenta ou reduz o numero de replicas se ter q alter o yaml
+# kubcetl delete nomeReplicaSet
+# kubcectl delete -f .\nomeFileYaml delte usando os dados do arquivo
+# kubectl get {pods} {replicaset} {deployment} -o wide #  => list of all pods, replicaset, deployment com mais detalhes
+# kubectl rollout undo deployment nomeDeployment => esse comando sempte volta o deployment anterior se ele existir
+
+# k3d cluster list => lista os clustes
+# k3d cluster delete nomeCluster => delete cluster
+# k3d cluster create meucluster --servers 1 --agents 2 -p "8080:30000@loadbalancer" => faz um bind da porta 8080 local para a porta 300000 do container loadbalance
+#                                                                                   => quando se cria o cluster ele cria sempre um container loadbalance
+
+# Pod - Nele que é executado um container. A replica sempre é feita no POD nao no container é o menor objeto
+# ReplicaSet - controla a escalibilidade, numero de replicas fica acima do Pod, gerencia Pod
+# Deployment - Fica acima do ReplicaSet, controla o update de versao, recria o replicaSet quando um pod sofre alteracao, maten o anterior, para ter um update de versao rapida e rolback rapido
+# Service - bind de portas internas entre pod e externas entre o cluster e os container. Tipos de service cluster-ip expoe de forma interna, service node-port, acessa de qualquer maquina que compoe o cluster
+#         - o service expoe a porta de um pod para poder ser acessado por outro ou ser acessado for fora
+#         - node-port em on primeses, e loadbalance em cloud
+# Sidecar
+
+##### exemplo yaml para criar um ReplicaSet
+
+# apiVersion: apps/v1                                                             # AGRUPAMENTO DE APIS DO KUBERNETS, RECURSOS FINALOZADOS QUE PODEM SER USADOS
+# kind: Pod                                                                       # TIPO, PODE SER  'Pod(menor objeto)', 'ReplicaSet(gerencia pods)' 'Deployment(gerencia os replicaset)',
+# metadata:
+#   name: meuReplicaSet                                                           # NOME DO ReplicaSet
+# spec:                                                                           # ESPECIFICAÇOES DO OBJETO, QDO POD, ESPECIFICO CONTAINER
+#   replicas: 10                                                                  # NUMEROS DE REPLICAS A SER CRIADAS DOS PODS
+#   selector:                                                                     # BASICAMENTE INFORMARO DO REPLICASET QUAIS POD ELE VAI GERENCIAR, ENTO O RP7 IRAR LOCALIZAR OS POD TEM AS LABELS DO MATCHLABEL
+#     matchLabels:
+#       app: nginx
+#   template:                                                                    # SAO AS DEFINICOES DO POD QUE SERA CRIADO PARA ESSE RP7
+#      metadata:
+#      #name: meuPod                                                             # NAO PRECISA O NOME EH RANDOMICO PQ TERA MUITAS REPLICAS
+#       labels:
+#         app: nginx                                                              # NOME OU ROTULO, DO POD PARA MATCH COM OS MATCHLABELS
+#      spec:                                                                      # ESPECIFICAÇOES DOS PODS
+#       containers:
+#         - name: site                                                            # NOME DO CONTAINER
+#           image: kubedevio/nginx-color:blue                                     # IMAGE PARA CRIAR O CONTAINER
+#           ports:
+#           - containerPort: 80                                                   # PORTA QUE O CONTANER EXPOE PARA ACESSAR O CONTEUDO
+
+##### exemplo yaml para criar um Deployment, eh igual ao do replicaset, nao precisa expecificar detalhes do replicaSet pq como eh deplpyment esta implicido que a criacao é de um replicaSet
+
+# apiVersion: apps/v1                                                             # AGRUPAMENTO DE APIS DO KUBERNETS, RECURSOS FINALOZADOS QUE PODEM SER USADOS
+# kind: Pod                                                                       # TIPO, PODE SER  'Pod(menor objeto)', 'ReplicaSet(gerencia pods)' 'Deployment(gerencia os replicaset)',
+# metadata:
+#   name: meuDeployment                                                           # NOME DO ReplicaSet
+# spec:                                                                           # ESPECIFICAÇOES DO OBJETO, QDO POD, ESPECIFICO CONTAINER
+#   replicas: 10                                                                  # NUMEROS DE REPLICAS A SER CRIADAS DOS PODS
+#   selector:                                                                     # BASICAMENTE INFORMARO DO REPLICASET QUAIS POD ELE VAI GERENCIAR, ENTO O RP7 IRAR LOCALIZAR OS POD TEM AS LABELS DO MATCHLABEL
+#     matchLabels:
+#       app: nginx
+#   template:                                                                    # SAO AS DEFINICOES DO POD QUE SERA CRIADO PARA ESSE RP7
+#      metadata:
+#      #name: meuPod                                                             # NAO PRECISA O NOME EH RANDOMICO PQ TERA MUITAS REPLICAS
+#       labels:
+#         app: nginx                                                              # NOME OU ROTULO, DO POD PARA MATCH COM OS MATCHLABELS
+#      spec:                                                                      # ESPECIFICAÇOES DOS PODS
+#       containers:
+#         - name: site                                                            # NOME DO CONTAINER
+#           image: kubedevio/nginx-color:blue                                     # IMAGE PARA CRIAR O CONTAINER
+#           ports:
+#           - containerPort: 80                                                   # PORTA QUE O CONTANER EXPOE PARA ACESSAR O CONTEUDO
+
+##### exemplo yaml para criar um Service,
+
+# apiVersion: apps/v1                                                             # AGRUPAMENTO DE APIS DO KUBERNETS, RECURSOS FINALOZADOS QUE PODEM SER USADOS
+# kind: Service                                                                       # TIPO, PODE SER  'Pod(menor objeto)', 'ReplicaSet(gerencia pods)' 'Deployment(gerencia os replicaset)', 'Service(permite acesso aos pod)'
+# metadata:
+#   name: meuDeployment                                                           # NOME DO ReplicaSet
+# spec:                                                                           # ESPECIFICAÇOES DO OBJETO, QDO POD, ESPECIFICO CONTAINER
+#   selector:                                                                     # BASICAMENTE INFORMAR  QUAIS POD O SERVICO DEVE PERMITIR ACESSO
+#     app: nginx                                                                  # NOME DO LABEL DO POD
+#   ports:                                                                        # O SERVICE SER ACESSADO PELA PORTA DEFINIDA ABAIXO
+#     - port: 80
+#       nodePort: 30000                                                           # define a porta que sera aberta nos pods para acessa-lo
+#   type: NodePort                                                                # nodeport eh o tipo que uso pq estou usando onprimses, eh tudo local
